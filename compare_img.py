@@ -29,7 +29,7 @@ def gradient_descent(big_img, small_img, inital_position, Binari):
     eta = 10 ** 4
     eta_n = eta
     # 初始化误差
-    error_bar = 0.05
+    error_bar = 0.02
 
     # 将大图进行二值化
     big_img = cv2.cvtColor(big_img, cv2.COLOR_BGR2GRAY)
