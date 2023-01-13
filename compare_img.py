@@ -29,7 +29,7 @@ def gradient_descent(big_img, small_img, inital_position, Binari):
     eta = 10 ** 4
     eta_n = eta
     # 初始化误差
-    error_bar = 0.02
+    error_bar = 0.05
 
     # 将大图进行二值化
     big_img = cv2.cvtColor(big_img, cv2.COLOR_BGR2GRAY)
@@ -68,4 +68,4 @@ def gradient_descent(big_img, small_img, inital_position, Binari):
         #如果超出范围，立马退出
         if abs(x_n - x_0) > x_Range or abs(y_n - y_0) > y_Range:
             break
-    return are_same
+    return are_same, current_error

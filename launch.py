@@ -13,7 +13,7 @@ def are_tiaoguo(big_img):
     tiaoguo_img = cv2.imread(os.getcwd() + '\\images\\process\\tiaoguo.jpg')
     # 将跳过图片在目标位置附近进行搜索，启动二值化
     Bin = 100
-    flag = compare_img.gradient_descent(big_img, tiaoguo_img, tiaoguo_position, Bin)
+    flag, error = compare_img.gradient_descent(big_img, tiaoguo_img, tiaoguo_position, Bin)
     # 返回是否有跳过图标
     return flag
 
@@ -33,7 +33,7 @@ def are_same_pic(current_img, last_img):
     same_pic = False
     shot = [172, 963]
     Bin = 100
-    same_pic = compare_img.gradient_descent(current_img, last_img, shot, Bin)
+    same_pic, error = compare_img.gradient_descent(current_img, last_img, shot, Bin)
     return same_pic
 
 # 统计刺客是否枪人，枪的第几个
@@ -53,7 +53,7 @@ def cike_shot(big_img):
             Bin = 20
             position = [x, y]
             # 将鸭子位置和枪口进行对比
-            shotted = compare_img.gradient_descent(big_img, cike, position, Bin)
+            shotted, error = compare_img.gradient_descent(big_img, cike, position, Bin)
             if shotted:
                 shot = True
                 lucky_duck = j
@@ -78,7 +78,7 @@ def count_death(big_img):
             Bin = 177
             position = [x, y]
             # 将鸭子位置和死亡图像进行对比
-            dead_duck = compare_img.gradient_descent(big_img, dead, position, Bin)
+            dead_duck, error = compare_img.gradient_descent(big_img, dead, position, Bin)
             if dead_duck:
                 count_dead.append(j)
             # 对准下一位玩家的鸭头
@@ -101,10 +101,14 @@ def are_settlement(image):
     # 二值化指标
     Bin = 140
 
+    # 在所有胜利图标中找到最小的
+    compare_win = []
+    compare_error = []
+
     # 将胜利信息与所有图片进行比较
     for file in files:
         chara = cv2.imread(chara_path + file)
-        win_chara = compare_img.gradient_descent(image, chara, win_position, Bin)
+        win_chara, error = compare_img.gradient_descent(image, chara, win_position, Bin)
         if win_chara == True:
             img_up = image[up1:up2, left1:left2]
             img_down = image[down1:down2, left1:left2]
@@ -113,10 +117,18 @@ def are_settlement(image):
             name = list(file)
             del name[len(name)-4:len(name)]
             name = ''.join(name)
-            return True, name, img_con
 
-    # 没找到就返回空
-    return False, None, None
+            # 将满足的记录在案
+            compare_win.append(name)
+            compare_error.append(error)
+    
+    if len(compare_win) > 0:
+        error_index = min(compare_error)
+        name = compare_win[compare_error.index(error_index)]
+        return True, name, img_con
+    else:
+        # 没找到就返回空
+        return False, None, None
 
 # 进入每一局游戏的循环判断
 # count_rounds 输入这是第几轮，与刺客枪人有关
